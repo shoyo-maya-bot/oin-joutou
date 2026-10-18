@@ -1,0 +1,10 @@
+{
+  "name": "oin-joutou",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler pages dev public --d1 DB=oin-ranking-local"
+  },
+  "devDependencies": {
+    "wrangler": "4.20.0"
+  }
+}
