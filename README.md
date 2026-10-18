@@ -3,20 +3,20 @@
 定時まで90秒。降ってくる書類を、ハンコ一本でねじ伏せるブラウザゲーム。
 
 - ゲーム本体: `public/index.html`（1ファイル。画像素材なし、音もプログラムで合成）
-- ランキングAPI: `functions/api/[[route]].js`（Cloudflare Pages Functions + D1）
+- ランキングAPI: `src/api.js`（Cloudflare Workers + D1。入口は `src/worker.js`）
 - Twitter（X）用カード画像: `public/og.png`
 
-## 公開のしかた（Cloudflare Pages）
+## 公開のしかた（Cloudflare Workers）
 
-1. Cloudflare のダッシュボードで **Workers & Pages → 作成 → Pages → Git に接続** を選び、このリポジトリを選ぶ
-   - プロジェクト名: `oin-joutou`（URL が `https://oin-joutou.pages.dev` になる）
-   - フレームワーク: なし / ビルドコマンド: 空欄 / ビルド出力ディレクトリ: `public`
-2. **ストレージとデータベース → D1 → データベースを作成** で `oin-ranking` を作る
-3. Pages プロジェクトの **設定 → バインディング → 追加 → D1 データベース** で
-   - 変数名: `DB` / データベース: `oin-ranking`
-4. **デプロイ → 最新のデプロイを再試行** で再デプロイ（バインディングを反映するため）
+1. Cloudflare のダッシュボードで **Workers & Pages → Create application → Import a repository** を選び、このリポジトリを選ぶ
+2. 設定はそのまま（Deploy command: `npx wrangler deploy`）で **Deploy**
+   - ランキング用のデータベース `oin-ranking`（D1）は初回デプロイ時に自動で作られる
+   - 公開URL: `https://oin-joutou.<アカウントのサブドメイン>.workers.dev`
+3. 以後は `main` に push するたびに自動で再デプロイされる
 
-テーブルは初回アクセス時に自動で作られる。プロジェクト名を変えた場合は、`public/index.html` の `og:url` と `og:image` の URL も合わせて直す。
+テーブルは初回アクセス時に自動で作られる。独自ドメインにした場合は、`public/index.html` の `og:url` と `og:image` の URL も合わせて直す。
+
+Cloudflare Pages で公開する場合は、ビルド出力ディレクトリを `public` にし、D1 を変数名 `DB` でバインドする（入口は `functions/api/[[route]].js`）。
 
 ## ランキングの仕組み
 
@@ -31,5 +31,5 @@
 
 ```
 npm install
-npm run dev   # http://localhost:8788
+npm run dev   # http://localhost:8788（ローカル用のD1が自動で使われる）
 ```
